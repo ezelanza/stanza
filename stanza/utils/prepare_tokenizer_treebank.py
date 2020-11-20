@@ -80,6 +80,7 @@ def prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_la
     if short_name == "sl_ssj":
         preprocess_ssj_data.process(input_txt, input_conllu, input_txt_copy, input_conllu_copy)
     else:
+        os.makedirs(tokenizer_dir, exist_ok=True)
         shutil.copyfile(input_txt, input_txt_copy)
         shutil.copyfile(input_conllu, input_conllu_copy)
 
