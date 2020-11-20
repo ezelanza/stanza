@@ -113,7 +113,7 @@ def process_treebank(treebank, paths):
 def main():
     if len(sys.argv) == 1:
         raise ValueError("Need to provide a treebank name")
-    
+
     treebank = sys.argv[1]
     paths = default_paths.get_default_paths()
     if treebank.lower() == 'ud_all':
@@ -122,7 +122,7 @@ def main():
             process_treebank(t, paths)
     else:
         process_treebank(treebank, paths)
-    
+
 if __name__ == '__main__':
     main()
 
