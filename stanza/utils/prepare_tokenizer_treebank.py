@@ -94,6 +94,26 @@ def prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_la
                                                     "--char_level_pred", f"{tokenizer_dir}/{short_name}-ud-{dataset}.toklabels",
                                                     "-o", f"{tokenizer_dir}/{short_name}-ud-{dataset}.json"])
 
+def process_ud_treebank(treebank, udbase_dir, tokenizer_dir, short_name, short_language):
+    """
+    Process a normal UD treebank with train/dev/test splits
+
+    SL-SSJ and Vietnamese both use this code path as well.
+    """
+    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "train")
+    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "dev")
+    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "test")
+
+
+def process_partial_ud_treebank(treebank, udbase_dir, tokenizer_dir, short_name, short_language):
+    """
+    Process a UD treebank with only train/test splits
+
+    For example, in UD 2.7, ... TODO
+    """
+    pass
+
+
 def process_treebank(treebank, paths):
     """
     Processes a single treebank into train, dev, test parts
@@ -108,14 +128,20 @@ def process_treebank(treebank, paths):
     udbase_dir = paths["UDBASE"]
     tokenizer_dir = paths["TOKENIZE_DATA_DIR"]
 
+    train_txt_file = find_treebank_dataset_file(treebank, udbase_dir, "train", "txt")
+    if not train_txt_file:
+        raise ValueError("Cannot find train file for treebank %s" % treebank)
+
     short_name = treebank_to_short_name(treebank)
     short_language = short_name.split("_")[0]
 
     print("Preparing data for %s: %s, %s" % (treebank, short_name, short_language))
 
-    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "train")
-    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "dev")
-    prepare_ud_dataset(treebank, udbase_dir, tokenizer_dir, short_name, short_language, "test")
+    if all_underscores(train_txt_file):
+        process_partial_ud_treebank(treebank, udbase_dir, tokenizer_dir, short_name, short_language)
+    else:
+        process_ud_treebank(treebank, udbase_dir, tokenizer_dir, short_name, short_language)
+
 
 def main():
     if len(sys.argv) == 1:
